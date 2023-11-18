@@ -1,4 +1,6 @@
 MCU=atmega32u4
+FUSE_L=0xFF
+FUSE_H=0xD8
 F_CPU=16000000
 CC=avr-gcc
 LD=avr-ld
