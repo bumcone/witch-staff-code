@@ -7,10 +7,10 @@ SIZE=avr-size
 AVRDUDE=avrdude
 #PROGRAMMER=usbasp
 PROGRAMMER=avr109
-CFLAGS=-Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
+CFLAGS=-Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I. -Ilight_ws2812
 TARGET=witchstaff
 
-SRCS = main.c
+SRCS = main.c light_ws2812/light_ws2812.c
 	
 all:
 	${CC} ${CFLAGS} -o ${TARGET}.o ${SRCS}
