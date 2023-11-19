@@ -27,7 +27,8 @@
 #include <avr/interrupt.h>
 #include "light_ws2812.h"
 
-#define LED_PIN PB0
+#define LED_PORT PORTB
+#define LED_ID   PB0
 
 struct cRGB led[1];
 
@@ -36,26 +37,18 @@ int main(void) {
     DDRB  = 0b00000001; // Set LED pin as OUTPUT
     PORTB = 0b00000000; // Set all pins to LOW
 
+    led[0].r = 0; led[0].g = 0; led[0].b = 0;
+
     // Main loop
     while (1) {
 
-        // Colour LED blinky!
-
-PORTB ^= _BV(LED_PIN);
-        // Write red
-        led[0].r = 255; led[0].g =   0; led[0].b =   0;
-        ws2812_setleds(led, 1);
-        _delay_ms(500);
-
-PORTB ^= _BV(LED_PIN);
+PORTB ^= _BV(LED_ID);
         // Write green
         led[0].r =   0; led[0].g = 255; led[0].b =   0;
         ws2812_setleds(led, 1);
         _delay_ms(500);
 
-PORTB ^= _BV(LED_PIN);
-        // Write blue
-        led[0].r =   0; led[0].g =   0; led[0].b = 255;
+        led[0].r =   0; led[0].g =   0; led[0].b =   0;
         ws2812_setleds(led, 1);
         _delay_ms(500);
 
