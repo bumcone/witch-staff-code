@@ -38,12 +38,17 @@
 struct cRGB led[1];
 
 // TODO: Add better debouncer?
-int button_pressed(void) {
-    // If pressed
-    if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) {
-        _delay_ms(10);
+int button_pressed(int delay) {
+    if (delay <= 0) delay = 1;
 
-        if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) return true;
+    while (delay > 0) {
+        // If pressed
+        if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) {
+            _delay_ms(10);
+            delay -= 10;
+
+            if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) return true;
+        }
     }
 
     return false;
@@ -61,7 +66,7 @@ int main(void) {
     // Main loop
     while (1) {
 
-        if (!button_pressed()) continue;
+        if (!button_pressed(200)) continue;
 
 PORTB ^= _BV(LED_ID);
         // Write green
