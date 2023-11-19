@@ -65,14 +65,6 @@ void fire_staff(void) {
     }
     _delay_ms(50);
 
-    for (i = 0; i < 40; ++i) {
-        led[0].g = 180; ws2812_setleds(led, 1); _delay_ms(1);
-        led[0].g = 255; ws2812_setleds(led, 1); _delay_ms(1);
-    }
-    for (i = 0; i < 40; ++i) {
-        led[0].g = 220; ws2812_setleds(led, 1); _delay_ms(1);
-        led[0].g = 255; ws2812_setleds(led, 1); _delay_ms(1);
-    }
 
     for (i = 0; i < 40; ++i) {
         led[0].g = 160; ws2812_setleds(led, 1); _delay_ms(1);
