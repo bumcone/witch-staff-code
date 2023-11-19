@@ -29,6 +29,11 @@
 
 #define LED_PORT PORTB
 #define LED_ID   PB0
+#define BUT_PIN  PIND
+#define BUT_ID   PD1
+
+#define true  1
+#define false 0
 
 struct cRGB led[1];
 
@@ -37,10 +42,15 @@ int main(void) {
     DDRB  = 0b00000001; // Set LED pin as OUTPUT
     PORTB = 0b00000000; // Set all pins to LOW
 
+    DDRD  = 0b00000000; // Set button as INPUT
+
     led[0].r = 0; led[0].g = 0; led[0].b = 0;
 
     // Main loop
     while (1) {
+
+        // TODO: Add better debouncer
+        if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) {
 
 PORTB ^= _BV(LED_ID);
         // Write green
