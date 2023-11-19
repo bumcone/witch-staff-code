@@ -37,6 +37,18 @@
 
 struct cRGB led[1];
 
+// TODO: Add better debouncer?
+int button_pressed(void) {
+    // If pressed
+    if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) {
+        _delay_ms(10);
+
+        if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) return true;
+    }
+
+    return false;
+}
+
 int main(void) {
     // LED Setup
     DDRB  = 0b00000001; // Set LED pin as OUTPUT
@@ -49,8 +61,7 @@ int main(void) {
     // Main loop
     while (1) {
 
-        // TODO: Add better debouncer
-        if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) {
+        if (!button_pressed()) continue;
 
 PORTB ^= _BV(LED_ID);
         // Write green
