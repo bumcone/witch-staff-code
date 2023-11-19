@@ -54,6 +54,12 @@ int button_pressed(int delay) {
     return false;
 }
 
+void fire_staff(void) {
+    led[0].r =   0; led[0].g = 255; led[0].b =   0;
+    ws2812_setleds(led, 1);
+    _delay_ms(500);
+}
+
 int main(void) {
     int dir = 1;
     int min_val =  1;
@@ -83,9 +89,7 @@ int main(void) {
         if (!button_pressed(200)) continue;
 
         // Button pressed
-        led[0].r =   0; led[0].g = 255; led[0].b =   0;
-        ws2812_setleds(led, 1);
-        _delay_ms(500);
+        fire_staff();
 
         // Reset idle animation
         led[0].g = min_val;
