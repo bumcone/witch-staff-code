@@ -55,9 +55,34 @@ int button_pressed(int delay) {
 }
 
 void fire_staff(void) {
-    led[0].r =   0; led[0].g = 255; led[0].b =   0;
-    ws2812_setleds(led, 1);
-    _delay_ms(500);
+    int i = 0;
+
+    led[0].r = 0; led[0].b = 0;
+
+    for (led[0].g = 0; led[0].g < 255; ++led[0].g) {
+        ws2812_setleds(led, 1);
+//                _delay_ms(1);
+    }
+    _delay_ms(50);
+
+    for (i = 0; i < 40; ++i) {
+        led[0].g = 180; ws2812_setleds(led, 1); _delay_ms(1);
+        led[0].g = 255; ws2812_setleds(led, 1); _delay_ms(1);
+    }
+    for (i = 0; i < 40; ++i) {
+        led[0].g = 220; ws2812_setleds(led, 1); _delay_ms(1);
+        led[0].g = 255; ws2812_setleds(led, 1); _delay_ms(1);
+    }
+
+    for (i = 0; i < 40; ++i) {
+        led[0].g = 160; ws2812_setleds(led, 1); _delay_ms(1);
+        led[0].g = 200; ws2812_setleds(led, 1); _delay_ms(1);
+    }
+
+    for (; led[0].g > 10; --led[0].g) {
+        ws2812_setleds(led, 1);
+        _delay_ms(1);
+    }
 }
 
 int main(void) {
