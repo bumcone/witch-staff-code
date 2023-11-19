@@ -55,6 +55,10 @@ int button_pressed(int delay) {
 }
 
 int main(void) {
+    int dir = 1;
+    int min_val =  1;
+    int max_val =  5;
+
     // LED Setup
     DDRB  = 0b00000001; // Set LED pin as OUTPUT
     PORTB = 0b00000000; // Set all pins to LOW
@@ -66,17 +70,26 @@ int main(void) {
     // Main loop
     while (1) {
 
+        // Idle
+        led[0].g += dir;
+        if (led[0].g >= max_val) {
+            dir = -1;
+        } else if (led[0].g <= min_val) {
+            dir =  1;
+        }
+
+        ws2812_setleds(led, 1);
+
         if (!button_pressed(200)) continue;
 
-PORTB ^= _BV(LED_ID);
-        // Write green
+        // Button pressed
         led[0].r =   0; led[0].g = 255; led[0].b =   0;
         ws2812_setleds(led, 1);
         _delay_ms(500);
 
-        led[0].r =   0; led[0].g =   0; led[0].b =   0;
-        ws2812_setleds(led, 1);
-        _delay_ms(500);
+        // Reset idle animation
+        led[0].g = min_val;
+        dir = 1;
 
     } // Loop forever!
 }
