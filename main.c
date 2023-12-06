@@ -22,6 +22,8 @@
 
 // ATMega32u4 (Pro Micro) powered WS2812b controller
 
+#include "main.h"
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -34,10 +36,6 @@
 
 #define true      1
 #define false     0
-
-#define LED_COUNT 1
-#define MIN_VAL   1
-#define MAX_VAL   5
 
 struct cRGB led[LED_COUNT];
 
