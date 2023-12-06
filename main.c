@@ -24,10 +24,11 @@
 
 #include "main.h"
 
-#include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-#include "light_ws2812.h"
+#if !defined(NIX_TEST)
+#include "avr.h"
+#else
+#include "nix.h"
+#endif
 
 #define LED_PORT PORTB
 #define LED_ID   PB0
