@@ -35,10 +35,11 @@
 #define true      1
 #define false     0
 
+#define LED_COUNT 1
 #define MIN_VAL   1
 #define MAX_VAL   5
 
-struct cRGB led[1];
+struct cRGB led[LED_COUNT];
 
 // TODO: Add better debouncer?
 int button_pressed(int delay) {
@@ -59,36 +60,58 @@ int button_pressed(int delay) {
 
 void fire_staff(void) {
     int i = 0;
+    int n = 0;
 
-    led[0].r = 0; led[0].b = 0;
+    for (n = 0; n < LED_COUNT; ++n) {
+        led[n].r = 0; led[n].b = 0;
+    }
 
     for (led[0].g = 0; led[0].g < 255; ++led[0].g) {
-        ws2812_setleds(led, 1);
-//                _delay_ms(1);
+        for (n = 1; n < LED_COUNT; ++n) {
+            led[n].r = led[0].r;
+            led[n].g = led[0].g;
+            led[n].b = led[0].b;
+        }
+        ws2812_setleds(led, LED_COUNT);
+//        _delay_ms(1);
     }
     _delay_ms(50);
 
-
     for (i = 0; i < 40; ++i) {
-        led[0].g = 160; ws2812_setleds(led, 1); _delay_ms(1);
-        led[0].g = 200; ws2812_setleds(led, 1); _delay_ms(1);
+        for (n = 0; n < LED_COUNT; ++n) {
+            led[n].g = 160;
+        }
+        ws2812_setleds(led, LED_COUNT);
+        _delay_ms(1);
+
+        for (n = 0; n < LED_COUNT; ++n) {
+            led[n].g = 200;
+        }
+        ws2812_setleds(led, LED_COUNT);
+        _delay_ms(1);
     }
 
     for (; led[0].g > 10; --led[0].g) {
-        ws2812_setleds(led, 1);
+        for (n = 1; n < LED_COUNT; ++n) {
+            led[n].g = led[0].g;
+        }
+        ws2812_setleds(led, LED_COUNT);
         _delay_ms(1);
     }
 }
 
 void idle_staff(int reset) {
     static int dir = 1;
+    int n = 0;
 
     if (reset) {
         dir = 1;
 
-        led[0].r = 0;
-        led[0].g = 0;
-        led[0].b = 0;
+        for (n = 0; n < LED_COUNT; ++n) {
+            led[n].r = 0;
+            led[n].g = 0;
+            led[n].b = 0;
+        }
 
         return;
     }
@@ -101,7 +124,11 @@ void idle_staff(int reset) {
         dir =  1;
     }
 
-    ws2812_setleds(led, 1);
+    for (n = 1; n < LED_COUNT; ++n) {
+        led[n].g = led[0].g;
+    }
+
+    ws2812_setleds(led, LED_COUNT);
 }
 
 int main(void) {
