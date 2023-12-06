@@ -32,8 +32,11 @@
 #define BUT_PIN  PIND
 #define BUT_ID   PD1
 
-#define true  1
-#define false 0
+#define true      1
+#define false     0
+
+#define MIN_VAL   1
+#define MAX_VAL   5
 
 struct cRGB led[1];
 
@@ -77,10 +80,31 @@ void fire_staff(void) {
     }
 }
 
+void idle_staff(int reset) {
+    static int dir = 1;
+
+    if (reset) {
+        dir = 1;
+
+        led[0].r = 0;
+        led[0].g = 0;
+        led[0].b = 0;
+
+        return;
+    }
+
+    // Idle
+    led[0].g += dir;
+    if (led[0].g >= MAX_VAL) {
+        dir = -1;
+    } else if (led[0].g <= MIN_VAL) {
+        dir =  1;
+    }
+
+    ws2812_setleds(led, 1);
+}
+
 int main(void) {
-    int dir = 1;
-    int min_val =  1;
-    int max_val =  5;
 
     // LED Setup
     DDRB  = 0b00000001; // Set LED pin as OUTPUT
@@ -88,18 +112,14 @@ int main(void) {
 
     DDRD  = 0b00000000; // Set button as INPUT
 
-    led[0].r = 0; led[0].g = 0; led[0].b = 0;
+    // Reset idle animation
+    idle_staff(1);
 
     // Main loop
     while (1) {
 
-        // Idle
-        led[0].g += dir;
-        if (led[0].g >= max_val) {
-            dir = -1;
-        } else if (led[0].g <= min_val) {
-            dir =  1;
-        }
+        // Idle animation
+        idle_staff(0);
 
         ws2812_setleds(led, 1);
 
@@ -109,8 +129,8 @@ int main(void) {
         fire_staff();
 
         // Reset idle animation
-        led[0].g = min_val;
-        dir = 1;
+        idle_staff(1);
 
     } // Loop forever!
+
 }
