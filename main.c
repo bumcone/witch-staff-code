@@ -30,7 +30,7 @@
 #define LED_PORT PORTB
 #define LED_ID   PB0
 #define BUT_PIN  PIND
-#define BUT_ID   PD1
+#define BUT_ID   PD4
 
 #define true      1
 #define false     0
