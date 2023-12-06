@@ -40,24 +40,36 @@
 
 struct cRGB led[LED_COUNT];
 
+int debounce_count = 50;
+
 // TODO: Add better debouncer?
-int button_pressed(int delay) {
+int button_pressed(int reset_press, int delay) {
+    static int press_count = 0;
+
+    if (reset_press) press_count = 0;
+
     if (delay <= 0) delay = 1;
 
     while (delay > 0) {
         // If pressed
         if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) {
-            _delay_ms(10);
-            delay -= 10;
-
-            if ((BUT_PIN & (1<<BUT_ID)) != (1<<BUT_ID)) return true;
+            press_count += 1;
+        } else {
+            press_count = 0;
         }
+
+        if (press_count > debounce_count) return true;
+
+        _delay_ms(1);
+        delay--;
     }
 
     return false;
 }
 
 void fire_staff(void) {
+    printf("fire_staff()\n");
+
     int i = 0;
     int n = 0;
 
@@ -149,7 +161,7 @@ int main(void) {
 
         ws2812_setleds(led, 1);
 
-        if (!button_pressed(200)) continue;
+        if (!button_pressed(1, 200)) continue;
 
         // Button pressed
         fire_staff();
