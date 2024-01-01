@@ -39,6 +39,7 @@
 #define false     0
 
 struct cRGB led[LED_COUNT];
+struct cRGB new_led[LED_COUNT];
 
 int debounce_count = 50;
 
@@ -72,42 +73,65 @@ void fire_staff(void) {
 
     int i = 0;
     int n = 0;
+    struct cRGB new = {0, 0, 0};
 
     for (n = 0; n < LED_COUNT; ++n) {
-        led[n].r = 0; led[n].b = 0;
+        led[n].g = 0; led[n].r = 0; led[n].b = 0;
     }
 
-    for (led[0].g = 0; led[0].g < 255; ++led[0].g) {
-        for (n = 1; n < LED_COUNT; ++n) {
-            led[n].r = led[0].r;
-            led[n].g = led[0].g;
-            led[n].b = led[0].b;
+    for (new.g = 0; new.g < 255; /* ++new.g */) {
+        for (n = LED_COUNT-1; n > 0; --n) {
+            led[n].r = led[n-1].r;
+            led[n].g = led[n-1].g;
+            led[n].b = led[n-1].b;
         }
+
+        led[0].r = new.r;
+        led[0].g = new.g;
+        led[0].b = new.b;
         ws2812_setleds(led, LED_COUNT);
-//        _delay_ms(1);
+        _delay_ms(1);
+        if (new.g + 6 > 255) break;
+        if (new.g + 6 < new.g) break;
+        new.g += 6;
     }
-    _delay_ms(50);
+    _delay_ms(80);
 
-    for (i = 0; i < 40; ++i) {
-        for (n = 0; n < LED_COUNT; ++n) {
-            led[n].g = 160;
-        }
-        ws2812_setleds(led, LED_COUNT);
-        _delay_ms(1);
+    for (; new.g > 0; --new.g) {
+            for (n = LED_COUNT-1; n > 0; --n) {
+                led[n].r = led[n-1].r;
+                led[n].g = led[n-1].g;
+                led[n].b = led[n-1].b;
+            }
 
-        for (n = 0; n < LED_COUNT; ++n) {
-            led[n].g = 200;
-        }
-        ws2812_setleds(led, LED_COUNT);
-        _delay_ms(1);
+            led[0].r = new.r;
+            led[0].g = new.g;
+            led[0].b = new.b;
+            ws2812_setleds(led, LED_COUNT);
+            _delay_ms(2);
     }
+}
 
-    for (; led[0].g > 10; --led[0].g) {
-        for (n = 1; n < LED_COUNT; ++n) {
-            led[n].g = led[0].g;
-        }
-        ws2812_setleds(led, LED_COUNT);
-        _delay_ms(1);
+void idle_init(int led) {
+    static int chaos = 0;
+
+    int n = 0;
+    int n_min = 0;
+    int n_max = LED_COUNT - 1;
+
+    int seed = 16 + chaos;
+
+    if (++chaos > LED_COUNT) chaos = 0;
+
+    if (led < LED_COUNT) n_min = n_max = led;
+
+    for (n = n_min; n <= n_max; ++n) {
+        new_led[n].r = 0;
+        new_led[n].g = ( seed    %  4) *  1;
+        new_led[n].b = ( (((seed+1) % 16) *  1) / 2);
+        if (new_led[n].b >= 16) new_led[n].b = 0;
+
+        ++seed;
     }
 }
 
@@ -127,6 +151,38 @@ void idle_staff(int reset) {
         return;
     }
 
+    for (n = 0; n < LED_COUNT; ++n) {
+        if (
+            led[n].r == new_led[n].r &&
+            led[n].g == new_led[n].g &&
+            led[n].b == new_led[n].b
+        ) idle_init(n);
+
+        led[n].r +=
+            (
+                (new_led[n].r > led[n].r) ? 1 :
+                    ((new_led[n].r < led[n].r) ? -1 : 0)
+            );
+
+        led[n].g +=
+            (
+                (new_led[n].g > led[n].g) ? 1 :
+                    ((new_led[n].g < led[n].g) ? -1 : 0)
+            );
+
+        led[n].b +=
+            (
+                (new_led[n].b > led[n].b) ? 1 :
+                    ((new_led[n].b < led[n].b) ? -1 : 0)
+            );
+    }
+
+    ws2812_setleds(led, LED_COUNT);
+    return;
+
+
+
+
     // Idle
     led[0].g += dir;
     if (led[0].g >= MAX_VAL) {
@@ -144,6 +200,9 @@ void idle_staff(int reset) {
 
 int main(void) {
 
+    // Setup idle
+    idle_init(LED_COUNT);
+
     // LED Setup
     DDRB  = 0b00000001; // Set LED pin as OUTPUT
     PORTB = 0b00000000; // Set all pins to LOW
@@ -159,7 +218,7 @@ int main(void) {
         // Idle animation
         idle_staff(0);
 
-        ws2812_setleds(led, 1);
+//        ws2812_setleds(led, 1);
 
         if (!button_pressed(1, 200)) continue;
 

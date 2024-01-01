@@ -25,7 +25,7 @@
 #ifndef   _MAIN_H_
 #define   _MAIN_H_
 
-#define LED_COUNT 1
+#define LED_COUNT 18
 #define MIN_VAL   1
 #define MAX_VAL   5
 
